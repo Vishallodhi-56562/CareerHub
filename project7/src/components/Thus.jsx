@@ -302,3 +302,4 @@ function getCircularPosition(index, current, total) {
     </div>
   );
 }
+

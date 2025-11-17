@@ -1,87 +1,98 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import {BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import LoginForm from './components/LoginForm'
-import SignUp from './components/SignUp'
-import Category from './components/Category'
-import Thus from './components/Thus'
-import AuthoContainer from './components/AuthoContainer'
-import JobCard from './components/JobCard'
-import Navbar from './components/Navbar'
-import Dashboard from './components/Dashboard'
-import Home from './components/Home'
-import PostAJob from './components/PostAJob'
-import Resources from './components/Resources'
-import Company from './components/Company'
-import JobList from './components/JobList';
-import ApplyForm from './components/ApplyForm'
-import AdminDashboard from './components/AdminDashboard'
+import React, { useContext } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
-
+import { AuthContext } from "./context/AuthProvider.jsx";
+import "./index.css"
+import LoginForm from "./components/LoginForm.jsx";
+import SignUp from "./components/SignUp";
+import Category from "./components/Category";
+import AuthoContainer from "./components/AuthoContainer";
+import JobCard from "./components/JobCard";
+import Navbar from "./components/Navbar";
+import Dashboard from "./components/Dashboard";
+import Home from "./components/Home";
+import PostAJob from "./components/PostAJob";
+import Resources from "./components/Resources";
+import Company from "./components/Company";
+import JobList from "./components/JobList";
+import ApplyForm from "./components/ApplyForm";
+import AdminDashboard from "./components/AdminDashboard";
+import PrivateRoute from "./components/PrivateRoute.jsx";
+import MyJobs from "./components/company/MyJobs";
+import CompanyRegister from "./components/company/CompanyRegister";
+import CompanyLogin from "./components/company/CompanyLogin";
+import CompanyDashboard from "./components/company/CompanyDashboard";
+import CompanyPostJob from "./components/company/CompanyPostJob";
+import SearchResults from "./components/SearchResults";
 
 const App = () => {
-   
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-    const [jobs, setJobs] = useState([]);
+  const { user } = useContext(AuthContext);
 
-
-  useEffect(() =>{
-        const savedLogin = localStorage.getItem("isLoggedIn") === "true";
-    setIsLoggedIn(savedLogin);
-
-     const storedJobs = JSON.parse(localStorage.getItem("jobs") || "[]");
-    setJobs(storedJobs)
-  }, []);
- 
- useEffect(() => {
-    localStorage.setItem("jobs", JSON.stringify(jobs));
-  }, [jobs]);
-
-
-  const addJob = (job) => {
-    setJobs((prevJobs) => {
-      const updatedJobs = [...prevJobs, job]
-    localStorage.setItem("jobs", JSON.stringify(updatedJobs)); // ← fixed
-     return updatedJobs
-  })
-  }
+  const RouteInspector = () => {
+  const location = useLocation();
+  console.log("ROUTE INSPECTOR -> current pathname:", location.pathname);
+  return (
+    <div style={{position: "fixed", right: 10, bottom: 10, background: "white", padding: 6, border: "1px solid #ccc", zIndex: 9999}}>
+       {location.pathname}
+    </div>
+  );
+};
 
 
   return (
-    <>
     <Router>
-      <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}/>
+      <Navbar />
+         <RouteInspector />
       <Routes>
-        <Route path="/" element={<Home isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} jobs={jobs} />} />
+        
+        <Route path="/" element={<Home />} />
 
-        <Route path="/LoginForm" element={<LoginForm setIsLoggedIn={setIsLoggedIn} />} />
-        <Route path='/SignUp' element={<SignUp/>}/>
-        <Route path="/Dashboard" element ={isLoggedIn ?(
-          <Dashboard/> 
-          ):(
-            <Navigate to='/login' replace/>
-          )}/>
-           <Route
-          path="/admin-dashboard"
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/signup" element={<SignUp />} />
+
+        {/* Protected Routes */}
+        <Route
+          path="/dashboard"
           element={
-            isLoggedIn && localStorage.getItem("role") === "admin" ? (
-              <AdminDashboard />
-            ) : (
-              <Navigate to="/login" replace />
-            )
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
           }
         />
 
-        <Route path="/PostAJob" element={<PostAJob addJob={addJob}/>} />
-        <Route path='/Company' element={<Company/>}/>
+        <Route
+          path="/admin-dashboard"
+          element={
+            <PrivateRoute>
+              {user?.role === "admin" ? <AdminDashboard /> : <Navigate to="/" replace />}
+            </PrivateRoute>
+          }
+        />
 
+        <Route
+          path="/PostAJob"
+          element={
+            <PrivateRoute>
+              <PostAJob />
+            </PrivateRoute>
+          }
+        />
+
+        <Route path="/Company" element={<Company />} />
+        <Route path="/apply/:jobId" element={<ApplyForm />} />
+        <Route path="/JobCard" element={<JobCard />} />
+       
+
+<Route path="/company/register" element={<CompanyRegister />} />
+<Route path="/company/login" element={<CompanyLogin />} />
+<Route path="/company/dashboard" element={<CompanyDashboard />} />
+<Route path="/company/post-job" element={<CompanyPostJob />} />
+<Route path="/company/my-jobs" element={<MyJobs />} />
+<Route path="/search" element={<SearchResults />} />
 
       </Routes>
+    </Router>
+  );
+};
 
-          </Router>
-     </>
-     
-  )
-}
-
-export default App
+export default App;

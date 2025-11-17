@@ -212,7 +212,7 @@ const categories = [
             <div
             onClick={() => onCategorySelect(cat.name)}
               style={getMainItemStyle(idx)}
-              className={`absolute w-64 h-20 bg-gradient-to-br ${cat.color} rounded-[5px] shadow-2xl flex flex-col items-center  justify-center p-6`}
+              className={`absolute w-64 h-20 bg-gradient-to-r from-gray-900 via-slate-900 to-gray-900 text-gray-300 ${cat.color} rounded-[5px] shadow-2xl flex flex-col items-center  justify-center p-6`}
             >
               <h2 className="text-2xl text-white font-bold">{cat.name}</h2>
             </div>

@@ -1,111 +1,120 @@
-import React, { useState } from "react";
-import "./LoginForm.css";
+import React, { useState, useContext } from "react";
+import axios from "axios";
+import { AuthContext } from "../context/AuthProvider";
 import { useNavigate, Link } from "react-router-dom";
 
 const SignUp = () => {
+  const { login } = useContext(AuthContext);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
   const navigate = useNavigate();
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
+    setErr("");
     try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.message || "Sign-up failed");
-        setLoading(false);
-        return;
-      }
-
-      alert("✅ Registration successful! You can now log in.");
-      navigate("/login");
+      const res = await axios.post("/api/auth/register", { name, email, password });
+      login(res.data);
+      navigate("/");
     } catch (error) {
-      console.error("Sign-up error:", error);
-      alert("Server error. Please try again later.");
-    } finally {
-      setLoading(false);
+      setErr(error?.response?.data?.message || "Registration failed");
     }
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-cover bg-[url('https://i.pinimg.com/1200x/d1/da/63/d1da635864ae706e228343227a61a28e.jpg')]">
-      <div className="flex bg-black/50 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden max-w-4xl w-full mx-10">
-        {/* Left panel */}
-        <div className="flex flex-col justify-center items-center p-10 w-1/2 text-white bg-gradient-to-br from-orange-700 to-teal-700">
-          <h1 className="text-4xl font-bold mb-4">Join Us 🚀</h1>
-          <p className="text-lg text-orange-100 text-center">
-            Create an account to explore thousands of jobs.
-          </p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-100 via-white to-sky-200 px-4 pt-[120px]">
+      <div className="w-full max-w-md bg-white/80 backdrop-blur-xl shadow-2xl rounded-2xl p-8 border border-white/40">
+        
+        {/* Title */}
+        <h2 className="text-3xl font-bold text-center text-slate-800 mb-6">
+          Create Your Account
+        </h2>
+        <p className="text-center text-slate-500 mb-6">
+          Join CareerHub and start your journey
+        </p>
 
-        {/* Right panel */}
-        <div className="w-1/2 bg-white/10 backdrop-blur-md p-10 flex flex-col justify-center">
-          <form onSubmit={submitHandler} className="flex flex-col gap-6">
-            <h3 className="text-3xl text-orange-500 font-semibold text-center mb-6">
-              Sign Up
-            </h3>
+        {/* Error message */}
+        {err && (
+          <div className="mb-4 text-red-600 text-center font-medium">
+            {err}
+          </div>
+        )}
 
+        {/* Form */}
+        <form onSubmit={submitHandler} className="space-y-5">
+          {/* Name */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="p-3 rounded-xl border-2 border-orange-500 outline-none focus:ring-2 focus:ring-orange-400"
-              type="text"
-              placeholder="Full Name"
               required
+              className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white shadow-sm"
+              placeholder="John Doe"
             />
+          </div>
 
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
             <input
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="p-3 rounded-xl border-2 border-orange-500 outline-none focus:ring-2 focus:ring-orange-400"
-              type="email"
-              placeholder="Email Address"
               required
+              className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white shadow-sm"
+              placeholder="you@example.com"
             />
+          </div>
 
+          {/* Password */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
             <input
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="p-3 rounded-xl border-2 border-orange-500 outline-none focus:ring-2 focus:ring-orange-400"
-              type="password"
-              placeholder="Password"
               required
+              className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white shadow-sm"
+              placeholder="••••••••"
             />
+          </div>
 
-            <button
-              disabled={loading}
-              className={`py-3 rounded-xl font-semibold text-white transition ${
-                loading
-                  ? "bg-orange-400 cursor-not-allowed"
-                  : "bg-orange-600 hover:bg-orange-700 active:bg-orange-800"
-              }`}
-              type="submit"
-            >
-              {loading ? "Signing up..." : "Sign Up"}
-            </button>
+          {/* Sign Up Button */}
+          <button
+            type="submit"
+            className="w-full py-3 bg-sky-600 hover:bg-sky-700 transition-all text-white font-semibold rounded-xl shadow-lg hover:shadow-xl active:scale-[.98]"
+          >
+            Create Account
+          </button>
+        </form>
 
-            <p className="text-center text-sm text-gray-200 mt-4">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-orange-400 hover:underline font-medium"
-              >
-                Log In
-              </Link>
-            </p>
-          </form>
+        {/* Divider */}
+        <div className="flex items-center my-6">
+          <div className="flex-1 h-px bg-slate-200"></div>
+          <span className="px-3 text-sm text-slate-400">or</span>
+          <div className="flex-1 h-px bg-slate-200"></div>
         </div>
+
+        {/* Google Signup */}
+        <button className="w-full py-3 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl shadow-sm flex items-center justify-center gap-3">
+          <img
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            alt="Google"
+            className="w-5 h-5"
+          />
+          <span className="text-slate-700 font-medium">Sign up with Google</span>
+        </button>
+
+        {/* Already have account */}
+        <p className="text-center text-slate-500 mt-6">
+          Already have an account?{" "}
+          <Link className="text-sky-600 hover:text-sky-700 font-semibold" to="/login">
+            Login
+          </Link>
+        </p>
       </div>
     </div>
   );

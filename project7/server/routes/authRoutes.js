@@ -1,36 +1,30 @@
 // server/routes/authRoutes.js
 import express from "express";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 import User from "../models/user.js";
 
+dotenv.config();
 const router = express.Router();
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
-// LOGIN
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
+// Register
+router.post("/register", async (req, res) => {
   try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const { name, email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ message: "Email and password required" });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid password" });
+    const existing = await User.findOne({ email });
+    if (existing) return res.status(409).json({ message: "Email already registered" });
 
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET || "secret123",
-      { expiresIn: "1d" }
-    );
+    const user = new User({ name, email, password });
+    await user.save();
 
-    res.json({
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    res.status(201).json({
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
       token,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
     });
   } catch (err) {
     console.error(err);
@@ -38,20 +32,23 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// REGISTER
-router.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
-
+// Login
+router.post("/login", async (req, res) => {
   try {
-    const existing = await User.findOne({ email });
-    if (existing)
-      return res.status(400).json({ message: "Email already exists" });
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ message: "Email and password required" });
 
-    const hashed = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashed, role: "user" });
-    await newUser.save();
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
-    res.json({ message: "User created successfully" });
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    res.json({
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      token,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });

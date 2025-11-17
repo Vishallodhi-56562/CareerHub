@@ -1,26 +1,38 @@
-// middleware/auth.js
+// server/middleware/auth.js
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import User from "../models/user.js";
 
-// ✅ Checks if the request has a valid JWT token
-export const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ message: "No token provided" });
-  }
+dotenv.config();
+const JWT_SECRET = process.env.JWT_SECRET || "changeme";
 
+// verifyToken — same as "protect"
+export const verifyToken = async (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // { id, role }
+    const authHeader = req.headers.authorization || "";
+    const token = authHeader.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
+    if (!token) return res.status(401).json({ message: "Not authorized, token missing" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) return res.status(401).json({ message: "User not found" });
+
+    req.user = user;
+    req.tokenPayload = decoded; // optional helper
     next();
-  } catch (error) {
-    res.status(403).json({ message: "Invalid or expired token" });
+  } catch (err) {
+    console.error("verifyToken error:", err.message);
+    return res.status(401).json({ message: "Token invalid or expired" });
   }
 };
 
-// ✅ Checks if the user is an admin
+// isAdmin — middleware that requires admin role
 export const isAdmin = (req, res, next) => {
-  if (!req.user || req.user.role !== "admin") {
-    return res.status(403).json({ message: "Access denied: Admins only" });
-  }
+  if (!req.user) return res.status(401).json({ message: "Not authenticated" });
+  if (req.user.role !== "admin") return res.status(403).json({ message: "Admin access required" });
   next();
 };
+
+// Backwards-compatible aliases (if other files import protect/adminOnly)
+export const protect = verifyToken;
+export const adminOnly = isAdmin;

@@ -10,7 +10,7 @@ export default function Footer() {
         <div>
           <h3 className="text-2xl font-bold text-white mb-3">About</h3>
           <p className="text-gray-400 leading-relaxed">
-            Project7 is a modern job portal built for developers, designers, and dreamers.
+            CareerHub is a modern job portal built for developers, designers, and dreamers.
             Our goal is to connect passionate individuals with the opportunities that
             help them grow — whether it’s a startup idea, a global company, or a local
             business looking for talent.

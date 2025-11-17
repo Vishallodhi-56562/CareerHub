@@ -5,22 +5,25 @@
   "type": "module",
   "scripts": {
     "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider nodemon server/server.js",
-    "dev": "concurrently \"npm run start\" \"cd ../ && npm run dev\" vite"
+    "dev": "concurrently \"npm run start\" \"vite --host\""
   },
   "dependencies": {
+    "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.553.0",
     "mongodb": "^7.0.0",
-    "mongoose": "^8.19.3",
+    "mongoose": "^8.19.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.9.5",
     "react-slick": "^0.31.0",
     "react-swipeable": "^7.0.2",
+    "recharts": "^3.4.1",
     "slick-carousel": "^1.8.1"
   },
   "devDependencies": {

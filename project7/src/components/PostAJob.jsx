@@ -62,7 +62,7 @@ return (
             <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className='bg-gray-100 rounded-3xl border-gray-300 outline-none p-2 px-3 border-2 focus:ring-2 focus:ring-blue-400' >
+          className='bg-gray-100 rounded-3xl border-gray-300 outline-none p-2 px-3 border-2 focus:ring-2 focus:ring-slate-500' >
           <option value='' disabled>
             Select Job Category
           </option>
@@ -82,25 +82,25 @@ return (
             <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-             className='bg-white rounded-2xl border-gray-300 w-70 outline-none flex p-1 px-3 border-2 focus:ring-2 focus:ring-blue-400' type='text' placeholder='Job Title'></input>
+             className='bg-white rounded-2xl border-gray-300 w-70 outline-none flex p-1 px-3 border-2 focus:ring-2 focus:ring-slate-500' type='text' placeholder='Job Title'></input>
            
             <input
             value={company}
-            onChange={(e) => setCompany(e.target.value)}  className='bg-white border-gray-300 rounded-2xl w-70 outline-none flex p-1 px-3 border-2 focus:ring-2 focus:ring-blue-400 ' type='text' placeholder='Compony Name'></input>
+            onChange={(e) => setCompany(e.target.value)}  className='bg-white border-gray-300 rounded-2xl w-70 outline-none flex p-1 px-3 border-2 focus:ring-2 focus:ring-slate-500 ' type='text' placeholder='Compony Name'></input>
             
             <input
             value={location}
-            onChange={(e) => setLocation(e.target.value)}  className='bg-white border-gray-300 rounded-2xl w-70 outline-none flex p-1 px-3 border-2 focus:ring-2 focus:ring-blue-400 ' type='text' placeholder='Location'></input>
+            onChange={(e) => setLocation(e.target.value)}  className='bg-white border-gray-300 rounded-2xl w-70 outline-none flex p-1 px-3 border-2 focus:ring-2 focus:ring-slate-500 ' type='text' placeholder='Location'></input>
             <input 
             value={salary}
-            onChange={(e) => setSalary(e.target.value)} className='bg-white border-gray-300 rounded-2xl w-70 outline-none flex p-1 px-3 border-2 focus:ring-2 focus:ring-blue-400' type='text' placeholder='Salary'></input>
+            onChange={(e) => setSalary(e.target.value)} className='bg-white border-gray-300 rounded-2xl w-70 outline-none flex p-1 px-3 border-2 focus:ring-2 focus:ring-slate-500' type='text' placeholder='Salary'></input>
 
  
 
 
 
            
-            <button className="bg-blue-600 text-white w-70 font-semibold py-2 rounded-3xl hover:bg-blue-700 active:scale-95 transition" type='submit '> Post</button>
+            <button className="bg-slate-600 text-white w-70 font-semibold py-2 rounded-3xl hover:bg-slate-700 active:scale-95 transition" type='submit '> Post</button>
         </form>
     </div>
   )
