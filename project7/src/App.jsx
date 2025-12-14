@@ -50,7 +50,6 @@ const App = () => {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<SignUp />} />
 
-        {/* Protected Routes */}
         <Route
           path="/dashboard"
           element={
